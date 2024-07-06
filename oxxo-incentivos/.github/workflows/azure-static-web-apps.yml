@@ -8,9 +8,6 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: oxxo-incentivos/oxxo-incentivos  # Ajusta esto a tu subdirectorio
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -22,14 +19,16 @@ jobs:
 
     - name: Install dependencies
       run: npm install
+      working-directory: oxxo-incentivos/oxxo-incentivos
 
     - name: Build project
       run: npm run build
+      working-directory: oxxo-incentivos/oxxo-incentivos
 
     - name: Deploy to Azure App Service
       uses: azure/webapps-deploy@v2
       with:
         app-name: oxxo-incentivos
         publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-        package: ./build
+        package: oxxo-incentivos/oxxo-incentivos/build
 
