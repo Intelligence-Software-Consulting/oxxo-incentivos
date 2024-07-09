@@ -1,30 +1,50 @@
+/* Results.css */
 .results-container {
-    padding: 20px;
-    background-color: #f5f5f5;
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
+    background-color: #f4f4f4;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 500px;
+    margin: auto;
+    margin-top: 50px;
   }
   
-  .results-table {
-    width: 80%;
+  .logout-button {
+    background-color: red;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+  
+  .logout-button:hover {
+    background-color: #f44336; /* Rojo oscuro */
+  }
+  
+  table {
+    width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
   }
   
-  .results-table th, .results-table td {
-    border: 1px solid #ddd;
+  th, td {
+    text-align: left;
     padding: 8px;
+    border-bottom: 1px solid #ddd;
   }
   
-  .results-table th {
-    background-color: #007bff;
-    color: white;
-    text-align: center;
+  th {
+    background-color: #f0f0f0;
   }
   
-  .results-table td {
-    text-align: center;
+  .total-container {
+    margin-top: 10px;
+    text-align: right;
+    font-weight: bold;
   }
   
