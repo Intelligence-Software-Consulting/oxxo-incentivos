@@ -1,15 +1,26 @@
 /* Results.css */
-.results-container {
+body {
+    font-family: Arial, sans-serif;
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
+    min-height: 100vh;
     background-color: #f4f4f4;
-    padding: 30px;
+  }
+  
+  .container {
+    background-color: #fff;
     border-radius: 8px;
+    padding: 30px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     width: 500px;
     margin: auto;
     margin-top: 50px;
+  }
+  
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
   }
   
   .logout-button {

@@ -33,12 +33,15 @@ function Results({ username }) {
   };
 
   return (
-    <div className="results-container">
+    <div className="container">
+      <h2>Desglose de incentivos por concursos a colaboradores</h2>
       {employeeInfo && (
         <div>
           <button className="logout-button" onClick={handleLogout}>Salir</button>
           <p>Pago realizado en nómina del 24 de mayo 2024.</p>
-          <h3>{employeeInfo["Nombre Empleado"]}</h3>
+          <div className="employee-info">
+            <h3>{employeeInfo["Nombre Empleado"]}</h3>
+          </div>
           <table>
             <thead>
               <tr>
