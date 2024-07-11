@@ -48,7 +48,7 @@ function Results({ username }) {
   return (
     <div className="container">
       <h2>Desglose de incentivos por concursos a colaboradores</h2>
-      {employeeInfo && (
+      {employeeInfo ? (
         <div>
           <button className="logout-button" onClick={handleLogout}>Salir</button>
           <p>Pago realizado en nómina del 24 de mayo 2024.</p>
@@ -77,8 +77,9 @@ function Results({ username }) {
             Total: ${data.reduce((total, item) => total + item.Importe, 0).toFixed(2)}
           </div>
         </div>
+      ) : (
+        <p>No se encontraron datos para el empleado {username}.</p>
       )}
-      {!employeeInfo && <p>No se encontraron datos para el empleado {username}.</p>}
     </div>
   );
 }
