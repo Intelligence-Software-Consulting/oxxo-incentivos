@@ -9,8 +9,13 @@ function Login({ onLogin }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onLogin(username);
-    navigate('/results'); // Redirigir a la página de resultados
+    // Usuario y contraseña de administrador
+    if (username === 'admin' && password === 'admin123') {
+      navigate('/admin'); // Redirigir a la página de administración
+    } else {
+      onLogin(username);
+      navigate('/results'); // Redirigir a la página de resultados
+    }
   };
 
   return (
@@ -35,7 +40,7 @@ function Login({ onLogin }) {
             placeholder="Password"
           />
         </div>
-        <button type="submit">Ver incentivos</button>
+        <button type="submit">Ingresar</button>
       </form>
     </div>
   );
