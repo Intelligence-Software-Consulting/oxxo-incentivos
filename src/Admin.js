@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Admin.css';
 
 function Admin() {
     const [file, setFile] = useState(null);
     const [message, setMessage] = useState('');
+    const navigate = useNavigate();
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
@@ -30,12 +32,17 @@ function Admin() {
         }
     };
 
+    const handleLogout = () => {
+        navigate('/'); // Redirige a la página principal (Login)
+    };
+
     return (
         <div className="admin-container">
             <h2>Subir archivo de incentivos</h2>
             <input type="file" accept=".xlsx" onChange={handleFileChange} />
             <button onClick={handleUpload}>Subir</button>
             {message && <p>{message}</p>}
+            <button className="logout-button" onClick={handleLogout}>Salir</button>
         </div>
     );
 }
