@@ -1,54 +1,43 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import './Admin.css';
 
 function Admin() {
-  const [file, setFile] = useState(null);
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+    const [file, setFile] = useState(null);
+    const [message, setMessage] = useState('');
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
+    const handleFileChange = (e) => {
+        setFile(e.target.files[0]);
+    };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (file && startDate && endDate) {
-      // Simula subir archivo
-      alert(`Archivo subido: ${file.name}, desde ${startDate} hasta ${endDate}`);
-      // Aquí podrías implementar la lógica para enviar el archivo al servidor
-    } else {
-      alert('Por favor completa todos los campos.');
-    }
-  };
+    const handleUpload = async () => {
+        if (!file) {
+            setMessage('Por favor, selecciona un archivo');
+            return;
+        }
 
-  return (
-    <div className="admin-container">
-      <h2>Panel de Administración</h2>
-      <form className="admin-form" onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>Fecha de Inicio</label>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-          />
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const response = await axios.post('/upload', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+
+            setMessage(response.data.message);
+        } catch (error) {
+            setMessage('Error al subir el archivo');
+        }
+    };
+
+    return (
+        <div className="admin-container">
+            <h2>Subir archivo de incentivos</h2>
+            <input type="file" accept=".xlsx" onChange={handleFileChange} />
+            <button onClick={handleUpload}>Subir</button>
+            {message && <p>{message}</p>}
         </div>
-        <div className="form-group">
-          <label>Fecha de Fin</label>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-          />
-        </div>
-        <div className="form-group">
-          <label>Subir Archivo</label>
-          <input type="file" accept=".xls,.xlsx" onChange={handleFileChange} />
-        </div>
-        <button type="submit">Subir</button>
-      </form>
-    </div>
-  );
+    );
 }
 
 export default Admin;
