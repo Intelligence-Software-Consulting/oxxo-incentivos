@@ -1,65 +1,87 @@
 const express = require('express');
-const path = require('path');
 const multer = require('multer');
+const path = require('path');
 const fs = require('fs');
 const XLSX = require('xlsx');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-// 📁 Carpeta donde se guardará el archivo subido
-const uploadDir = path.join(__dirname, 'uploads');
+console.log("🔥 Servidor iniciando...");
+
+// Verificar y crear directorio de subida en Azure
+const uploadDir = '/tmp/uploads';
 if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir);
+    fs.mkdirSync(uploadDir, { recursive: true });
+    console.log(`📁 Carpeta creada: ${uploadDir}`);
+} else {
+    console.log(`✅ Carpeta existente: ${uploadDir}`);
 }
 
-// 📤 Configuración de Multer para la subida del archivo
+// Configurar `multer`
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
+    destination: function (req, file, cb) {
         cb(null, uploadDir);
     },
-    filename: (req, file, cb) => {
-        cb(null, 'incentivos.xlsx'); // Siempre sobreescribir el archivo
+    filename: function (req, file, cb) {
+        cb(null, 'incentivos.xlsx');  // Siempre sobrescribimos el archivo
     }
 });
-const upload = multer({ storage });
+const upload = multer({ storage: storage });
 
-// 📌 Endpoint para subir el archivo de incentivos
+// Almacenamiento en memoria de incentivos
+let incentivosData = [];
+
+// Ruta para subir archivos y procesarlos
 app.post('/upload', upload.single('file'), (req, res) => {
-    res.json({ success: true, message: 'Archivo cargado correctamente' });
-});
-
-// 📌 Endpoint para obtener incentivos de un empleado por su número
-app.get('/incentivos/:empleado', (req, res) => {
-    const numeroEmpleado = parseInt(req.params.empleado, 10);
-    const filePath = path.join(uploadDir, 'incentivos.xlsx');
-
-    if (!fs.existsSync(filePath)) {
-        return res.status(400).json({ error: 'No hay archivo de incentivos cargado' });
+    if (!req.file) {
+        console.error("⚠️ No se recibió ningún archivo");
+        return res.status(400).json({ error: "Error al subir el archivo" });
     }
 
-    const workbook = XLSX.readFile(filePath);
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    const data = XLSX.utils.sheet_to_json(worksheet);
+    console.log(`📂 Archivo recibido: ${req.file.originalname}`);
 
-    const filteredData = data.filter(item => item["Número Empleado"] === numeroEmpleado);
+    // Leer y procesar el archivo XLSX
+    try {
+        const filePath = path.join(uploadDir, 'incentivos.xlsx');
+        const workbook = XLSX.readFile(filePath);
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        incentivosData = XLSX.utils.sheet_to_json(worksheet);
+        
+        console.log(`✅ Incentivos cargados en memoria (${incentivosData.length} registros).`);
+        res.json({ message: "Archivo subido y procesado exitosamente", dataCount: incentivosData.length });
+    } catch (error) {
+        console.error("❌ Error al procesar el archivo:", error);
+        res.status(500).json({ error: "Error al procesar el archivo" });
+    }
+});
+
+// Ruta para obtener incentivos por número de empleado
+app.get('/incentivos/:username', (req, res) => {
+    const username = parseInt(req.params.username);
+    console.log(`🔍 Buscando incentivos para el empleado: ${username}`);
+
+    if (isNaN(username)) {
+        return res.status(400).json({ error: "Número de empleado inválido" });
+    }
+
+    const filteredData = incentivosData.filter(item => item["Número Empleado"] === username);
 
     if (filteredData.length === 0) {
-        return res.status(404).json({ error: 'No se encontraron incentivos para este empleado' });
+        console.log("⚠️ No se encontraron incentivos.");
+        return res.status(404).json([]);
     }
 
     res.json(filteredData);
 });
 
-// 📌 Servir archivos estáticos del build de React
+// Servir React App
 app.use(express.static(path.join(__dirname, 'build')));
-
-// 📌 Manejar todas las rutas desconocidas y servir `index.html` para SPA
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
-// 🚀 Iniciar el servidor
+// Iniciar servidor
 app.listen(PORT, () => {
-    console.log(`✅ Server is running on port ${PORT}`);
+    console.log(`🚀 Servidor corriendo en el puerto ${PORT}`);
 });
